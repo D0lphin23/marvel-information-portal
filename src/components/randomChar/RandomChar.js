@@ -6,11 +6,6 @@ import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
 
 class RandomChar extends Component {
-    constructor(props) {
-        super(props);
-        this.updateChar();
-    }
-
     state = {
         char: {},
         loading: true,
@@ -18,6 +13,15 @@ class RandomChar extends Component {
     };
 
     marvelServices = new MarvelService();
+
+    componentDidMount() {
+        this.updateChar();
+        this.timerId = setInterval(this.updateChar, 5000);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timerId);
+    }
 
     onCharLoaded = (char) => {
         this.setState({ char, loading: false });
@@ -34,6 +38,12 @@ class RandomChar extends Component {
             .getCharacter(id)
             .then(this.onCharLoaded)
             .catch(this.onError);
+    };
+
+    onClickTryIt = () => {
+        this.updateChar();
+        clearInterval(this.timerId);
+        this.timerId = setInterval(this.updateChar, 5000);
     };
 
     render() {
@@ -53,7 +63,9 @@ class RandomChar extends Component {
                     </p>
                     <p className="randomchar__title">Or choose another one</p>
                     <button className="button button__main">
-                        <div className="inner">try it</div>
+                        <div className="inner" onClick={this.onClickTryIt}>
+                            try it
+                        </div>
                     </button>
                     <img
                         src={mjolnir}

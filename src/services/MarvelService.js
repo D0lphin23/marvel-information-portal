@@ -1,3 +1,5 @@
+import ironMan from "../resources/img/ironMan.jpg";
+
 class MarvelService {
     _apiBase = "https://marvel-server-zeta.vercel.app/";
     _apiKey = "apikey=d4eecb0c66dedbfae4eab45d312fc1df";
@@ -13,9 +15,9 @@ class MarvelService {
         return await res.json();
     };
 
-    getAllCharacters = async () => {
+    getAllCharacters = async (limit = this._limit) => {
         const res = await this.getResource(
-            `${this._apiBase}characters?limit=${this._limit}&${this._apiKey}`,
+            `${this._apiBase}characters?limit=${limit}&${this._apiKey}`,
         );
 
         return res.data.results.map(this._transformCharacter);
@@ -36,10 +38,15 @@ class MarvelService {
                 : char?.description ||
                   "There is no description for this character";
 
+        const thumbnail =
+            char?.name === "Iron Man"
+                ? ironMan
+                : `${char.thumbnail.path}.${char.thumbnail.extension}`;
+
         return {
             name: char.name,
             description: description,
-            thumbnail: `${char.thumbnail.path}.${char.thumbnail.extension}`,
+            thumbnail: thumbnail,
             homepage: char.urls[0].url,
             wiki: char.urls[1].url,
         };
