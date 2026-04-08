@@ -99,11 +99,9 @@ const ViewChars = ({ chars, onCharSelected }) => {
             <li
                 key={id}
                 className="char__item"
-                onClick={
-                    () => {
+                onClick={() => {
                     onCharSelected(id);
-                    }
-                }
+                }}
             >
                 <img src={thumbnail} alt={name} />
                 <div className="char__name">{name}</div>
