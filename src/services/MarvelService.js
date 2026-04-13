@@ -3,7 +3,8 @@ import ironMan from "../resources/img/ironMan.jpg";
 class MarvelService {
     _apiBase = "https://marvel-server-zeta.vercel.app/";
     _apiKey = "apikey=d4eecb0c66dedbfae4eab45d312fc1df";
-    _limit = 20;
+    _limit = 9;
+    _baseOffset = 0;
 
     getResource = async (url) => {
         let res = await fetch(url);
@@ -15,9 +16,12 @@ class MarvelService {
         return await res.json();
     };
 
-    getAllCharacters = async (limit = this._limit) => {
+    getAllCharacters = async (
+        offset = this._baseOffset,
+        limit = this._limit,
+    ) => {
         const res = await this.getResource(
-            `${this._apiBase}characters?limit=${limit}&${this._apiKey}`,
+            `${this._apiBase}characters?limit=${limit}&offset=${offset}&${this._apiKey}`,
         );
 
         return res.data.results.map(this._transformCharacter);
