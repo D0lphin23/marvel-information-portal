@@ -59,6 +59,26 @@ class CharList extends Component {
         });
     };
 
+    itemRefs = [];
+
+    setCharRef = (ref) => {
+        this.itemRefs.push(ref);
+    };
+
+    onSelectedChar = (id) => {
+        if (this.itemRefs.length > 0) {
+            this.itemRefs.forEach((item) =>
+                item.classList.remove("char__item_selected"),
+            );
+            const selectedItem = this.itemRefs[id];
+
+            if (selectedItem) {
+                selectedItem.classList.add("char__item_selected");
+                selectedItem.focus();
+            }
+        }
+    };
+
     render() {
         const { chars, loading, error, newItemsLoading, offset, charEnded } =
             this.state;
@@ -68,6 +88,8 @@ class CharList extends Component {
             <ViewChars
                 chars={chars}
                 onCharSelected={this.props.onCharSelected}
+                setCharRef={this.setCharRef}
+                onSelectedChar={this.onSelectedChar}
             />
         ) : null;
 
@@ -91,16 +113,25 @@ class CharList extends Component {
     }
 }
 
-const ViewChars = ({ chars, onCharSelected }) => {
-    const charsList = chars.map((char) => {
+const ViewChars = ({ chars, onCharSelected, setCharRef, onSelectedChar }) => {
+    const charsList = chars.map((char, i) => {
         const { id, name, thumbnail } = char;
 
         return (
             <li
                 key={id}
+                tabIndex={0}
+                ref={setCharRef}
                 className="char__item"
                 onClick={() => {
                     onCharSelected(id);
+                    onSelectedChar(i);
+                }}
+                onKeyDown={(e) => {
+                    if (e.key === " " || e.key === "Enter") {
+                        onCharSelected(id);
+                        onSelectedChar(i);
+                    }
                 }}
             >
                 <img src={thumbnail} alt={name} />
