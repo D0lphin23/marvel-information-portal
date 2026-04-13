@@ -44,11 +44,13 @@ class MarvelService {
                 : `${char.thumbnail.path}.${char.thumbnail.extension}`;
 
         return {
+            id: char.id,
             name: char.name,
             description: description,
             thumbnail: thumbnail,
             homepage: char.urls[0].url,
             wiki: char.urls[1].url,
+            comics: char.comics.items,
         };
     };
 }
