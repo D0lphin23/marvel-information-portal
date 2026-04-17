@@ -1,36 +1,27 @@
 import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
-import MarvelService from "../../services/MarvelService";
+import useMarvelService from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
 
 import "./charList.scss";
 
-const CharList = (props) => {
+const CharList = ({ onCharSelected }) => {
     const [chars, setChars] = useState([]);
     const [offset, setOffset] = useState(0);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
     const [newItemsLoading, setNewItemsLoading] = useState(false);
     const [charEnded, setCharEnded] = useState(false);
 
-    const marvelServices = new MarvelService();
+    const { loading, error, getAllCharacters } = useMarvelService();
 
     useEffect(() => {
-        onRequest();
+        onRequest(offset, true);
     }, []);
 
-    const onRequest = (offset) => {
-        onCharListLoading();
-        marvelServices
-            .getAllCharacters(offset)
-            .then(onCharsLoaded)
-            .catch(onError);
-    };
-
-    const onCharListLoading = () => {
-        setNewItemsLoading(true);
+    const onRequest = (offset, initial) => {
+        initial ? setNewItemsLoading(false) : setNewItemsLoading(true);
+        getAllCharacters(offset).then(onCharsLoaded);
     };
 
     const onCharsLoaded = (newChars) => {
@@ -40,15 +31,9 @@ const CharList = (props) => {
         }
 
         setChars((chars) => [...chars, ...newChars]);
-        setLoading(false);
-        setNewItemsLoading((newItemsLoading) => false);
-        setCharEnded((charEnded) => ended);
+        setNewItemsLoading(false);
+        setCharEnded(ended);
         setOffset((offset) => offset + 9);
-    };
-
-    const onError = () => {
-        setLoading(false);
-        setError(true);
     };
 
     const itemRefs = useRef([]);
@@ -78,12 +63,12 @@ const CharList = (props) => {
                     ref={(el) => (itemRefs.current[i] = el)}
                     className="char__item"
                     onClick={() => {
-                        props.onCharSelected(id);
+                        onCharSelected(id);
                         focusOnItem(i);
                     }}
                     onKeyDown={(e) => {
                         if (e.key === " " || e.key === "Enter") {
-                            props.onCharSelected(id);
+                            onCharSelected(id);
                             focusOnItem(i);
                         }
                     }}
@@ -100,14 +85,13 @@ const CharList = (props) => {
     const items = ViewChars(chars);
 
     const errorMessage = error ? <ErrorMessage /> : null;
-    const spinner = loading ? <Spinner /> : null;
-    const content = !(loading || error) ? items : null;
+    const spinner = loading && !newItemsLoading ? <Spinner /> : null;
 
-    const gridClass = `char__grid ${loading ? "char__grid_loading" : ""}`;
+    const gridClass = `char__grid ${loading && !newItemsLoading ? "char__grid_loading" : ""}`;
 
     return (
         <div className="char__list">
-            <ul className={gridClass}>{errorMessage || spinner || content}</ul>
+            <ul className={gridClass}>{errorMessage || spinner || items}</ul>
             <button
                 className="button button__main button__long"
                 disabled={newItemsLoading}

@@ -8,6 +8,12 @@
         justify-content: space-between;
         row-gap: 55px;
     }
+    &__grid_loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 318px;
+    }
     &__item {
         transition: 0.3s transform;
         &-img {
