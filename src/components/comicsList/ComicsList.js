@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+
 import useMarvelService from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
@@ -39,18 +41,16 @@ const ComicsList = ({ onComicsSelected }) => {
             const { id, title, thumbnail, price } = comics;
 
             return (
-                <li
-                    key={id}
-                    tabIndex={0}
-                    className="comics__item"
-                    onClick={() => onComicsSelected(id)}
-                    onKeyDown={(e) => {
-                        if (e.key === " " || e.key === "Enter") {
-                            onComicsSelected(id);
-                        }
-                    }}
-                >
-                    <a href="#">
+                <li key={id} className="comics__item">
+                    <Link
+                        to={`/comics/${id}`}
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                            if (e.key === " " || e.key === "Enter") {
+                                e.currentTarget.click();
+                            }
+                        }}
+                    >
                         <img
                             src={thumbnail}
                             alt={title}
@@ -58,7 +58,7 @@ const ComicsList = ({ onComicsSelected }) => {
                         />
                         <div className="comics__item-name">{title}</div>
                         <div className="comics__item-price">{price}</div>
-                    </a>
+                    </Link>
                 </li>
             );
         });
